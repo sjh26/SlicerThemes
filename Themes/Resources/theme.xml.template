@@ -1,0 +1,10 @@
+<!--?xml version="1.0" encoding="UTF-8"?-->
+<resources>
+<color name="primaryColor">primaryColorKey</color>
+<color name="primaryLightColor">primaryLightColorKey</color>
+<color name="secondaryColor">secondaryColorKey</color>
+<color name="secondaryLightColor">secondaryLightColorKey</color>
+<color name="secondaryDarkColor">secondaryDarkColorKey</color>
+<color name="primaryTextColor">primaryTextColorKey</color>
+<color name="secondaryTextColor">secondaryTextColorKey</color>
+</resources>

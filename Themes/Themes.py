@@ -4,6 +4,7 @@ import os
 import vtk
 
 import slicer
+import qt
 from slicer.ScriptedLoadableModule import *
 from slicer.util import VTKObservationMixin
 
@@ -35,7 +36,6 @@ and Steve Pieper, Isomics, Inc. and was partially funded by NIH grant 3P41RR0132
 """
 
         # Additional initialization step after application startup is complete
-        slicer.app.connect("startupCompleted()", registerSampleData)
 
 
 #
@@ -85,26 +85,62 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         # in batch mode, without a graphical user interface.
         self.logic = ThemesLogic()
 
-        # Connections
-
-        # These connections ensure that we update parameter node when scene is closed
-        self.addObserver(slicer.mrmlScene, slicer.mrmlScene.StartCloseEvent, self.onSceneStartClose)
-        self.addObserver(slicer.mrmlScene, slicer.mrmlScene.EndCloseEvent, self.onSceneEndClose)
-
-        # These connections ensure that whenever user changes some settings on the GUI, that is saved in the MRML scene
-        # (in the selected parameter node).
-        self.ui.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
-        self.ui.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
-        self.ui.imageThresholdSliderWidget.connect("valueChanged(double)", self.updateParameterNodeFromGUI)
-        self.ui.invertOutputCheckBox.connect("toggled(bool)", self.updateParameterNodeFromGUI)
-        self.ui.invertedOutputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI)
+        self.populateThemesList()
 
         # Buttons
         self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
+        self.ui.clearButton.clicked.connect(self.onClearButton)
+        self.ui.ThemeComboBox.currentTextChanged.connect(self.onThemeSelectionChanged)
 
         # Make sure parameter node is initialized (needed for module reload)
         self.initializeParameterNode()
 
+    
+    def onThemeSelectionChanged(self, text):
+        self.ui.InvertCheckBox.checked = 'light_' in text
+
+        from qt_material import get_theme
+
+        theme = get_theme(text)
+
+        self.ui.primaryColorPickerButton.setColor(qt.QColor(theme['primaryColor']))
+        self.ui.primaryLightColorPickerButton.setColor(qt.QColor(theme['primaryLightColor']))
+        self.ui.secondaryColorPickerButton.setColor(qt.QColor(theme['secondaryColor']))
+        self.ui.secondaryLightColorPickerButton.setColor(qt.QColor(theme['secondaryLightColor']))
+        self.ui.secondaryDarkColorPickerButton.setColor(qt.QColor(theme['secondaryDarkColor']))
+        self.ui.primaryTextColorPickerButton.setColor(qt.QColor(theme['primaryTextColor']))
+        self.ui.secondaryTextColorPickerButton.setColor(qt.QColor(theme['secondaryTextColor']))
+
+        print(self.ui.secondaryTextColorPickerButton.text)
+    
+    
+    def getThemeDictionary(self):
+        theme = {}
+        theme['primaryColor'] = self.ui.primaryColorPickerButton.color.name()
+        theme['primaryLightColor'] = self.ui.primaryLightColorPickerButton.color.name()
+        theme['secondaryColor'] = self.ui.secondaryColorPickerButton.color.name()
+        theme['secondaryLightColor'] = self.ui.secondaryLightColorPickerButton.color.name()
+        theme['secondaryDarkColor'] = self.ui.secondaryDarkColorPickerButton.color.name()
+        theme['primaryTextColor'] = self.ui.primaryTextColorPickerButton.color.name()
+        theme['secondaryTextColor'] = self.ui.secondaryTextColorPickerButton.color.name()
+        return theme
+    
+    
+    def populateThemesList(self):
+        from qt_material import list_themes
+
+        themes = list_themes()
+
+        self.ui.ThemeComboBox.clear()
+
+        for theme in themes:
+            self.ui.ThemeComboBox.addItem(theme)
+
+    
+    def onReload(self):
+        self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
+    
+    
     def cleanup(self):
         """
         Called when the application closes and the module widget is destroyed.
@@ -149,11 +185,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         self.setParameterNode(self.logic.getParameterNode())
 
-        # Select default input nodes if nothing is selected yet to save a few clicks for the user
-        if not self._parameterNode.GetNodeReference("InputVolume"):
-            firstVolumeNode = slicer.mrmlScene.GetFirstNodeByClass("vtkMRMLScalarVolumeNode")
-            if firstVolumeNode:
-                self._parameterNode.SetNodeReferenceID("InputVolume", firstVolumeNode.GetID())
+        
 
     def setParameterNode(self, inputParameterNode):
         """
@@ -188,20 +220,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         # Make sure GUI changes do not call updateParameterNodeFromGUI (it could cause infinite loop)
         self._updatingGUIFromParameterNode = True
 
-        # Update node selectors and sliders
-        self.ui.inputSelector.setCurrentNode(self._parameterNode.GetNodeReference("InputVolume"))
-        self.ui.outputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolume"))
-        self.ui.invertedOutputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolumeInverse"))
-        self.ui.imageThresholdSliderWidget.value = float(self._parameterNode.GetParameter("Threshold"))
-        self.ui.invertOutputCheckBox.checked = (self._parameterNode.GetParameter("Invert") == "true")
+        
 
-        # Update buttons states and tooltips
-        if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume"):
-            self.ui.applyButton.toolTip = "Compute output volume"
-            self.ui.applyButton.enabled = True
-        else:
-            self.ui.applyButton.toolTip = "Select input and output volume nodes"
-            self.ui.applyButton.enabled = False
+        
 
         # All the GUI updates are done
         self._updatingGUIFromParameterNode = False
@@ -217,29 +238,32 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         wasModified = self._parameterNode.StartModify()  # Modify all properties in a single batch
 
-        self._parameterNode.SetNodeReferenceID("InputVolume", self.ui.inputSelector.currentNodeID)
-        self._parameterNode.SetNodeReferenceID("OutputVolume", self.ui.outputSelector.currentNodeID)
-        self._parameterNode.SetParameter("Threshold", str(self.ui.imageThresholdSliderWidget.value))
-        self._parameterNode.SetParameter("Invert", "true" if self.ui.invertOutputCheckBox.checked else "false")
-        self._parameterNode.SetNodeReferenceID("OutputVolumeInverse", self.ui.invertedOutputSelector.currentNodeID)
+        
 
         self._parameterNode.EndModify(wasModified)
 
     def onApplyButton(self):
         """
         Run processing when user clicks "Apply" button.
+
         """
-        with slicer.util.tryWithErrorDisplay("Failed to compute results.", waitCursor=True):
+        print('applying')
+        self.ui.applyButton.enabled = False
+        self.ui.clearButton.enabled = False
+        self.ui.applyButton.text = 'Loading theme...'
+        slicer.app.processEvents()
+        themeDictionary = self.getThemeDictionary()
+        self.logic.applyThemeForSlicer(themeDictionary, self.ui.StyleComboBox.currentText,self.ui.InvertCheckBox.checked)
+        self.ui.applyButton.enabled = True
+        self.ui.clearButton.enabled = True
+        self.ui.applyButton.text = 'Load Theme'
+        print('applying done')
 
-            # Compute output
-            self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
-                               self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
+    def onClearButton(self):
+        slicer.app.styleSheet = ''
 
-            # Compute inverted output (if needed)
-            if self.ui.invertedOutputSelector.currentNode():
-                # If additional output volume is selected then result with inverted threshold is written there
-                self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
-                                   self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
+    
+        
 
 
 #
@@ -262,46 +286,62 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         """
         ScriptedLoadableModuleLogic.__init__(self)
 
+    def resourcePath(self, filename):
+        """Return the absolute path of the module ``Resources`` directory.
+        """
+        scriptedModulesPath = os.path.dirname(slicer.util.modulePath(self.moduleName))
+        return os.path.join(scriptedModulesPath, 'Resources', filename)
+    
+    
+    def createThemeFile(self, themeDictionary):
+        templatePath = self.resourcePath('theme.xml.template')
+        with open(templatePath) as fp:
+            contents = fp.read()
+
+        for color, value in themeDictionary.items():
+            contents = contents.replace(color+'Key', value)
+
+        tempFilePath = os.path.join(slicer.app.temporaryPath,'theme.xml')
+
+        with open (tempFilePath, 'w') as fp:
+            fp.write(contents)
+
+        print(tempFilePath)
+        return tempFilePath
+    
+    
+    def applyThemeForSlicer(self,themeDictionary=None, style='Slicer',invert_secondary=True):
+        try:
+            import qt_material
+        except:
+            print('Please install qt-material')
+            return
+
+        if themeDictionary is None:
+            slicer.app.styleSheet = ''
+            return
+        
+        themeFileName = self.createThemeFile(themeDictionary)
+
+        print(style)
+
+        if style == 'Slicer':
+            template = self.resourcePath('slicer.classic.css.template')
+        else:
+            template = self.resourcePath('slicer.material.css.template')
+
+        from qt_material import build_stylesheet
+        extra = {'density_scale': '-2'}
+        stylesheet = build_stylesheet(theme=themeFileName,template=template, extra=extra, invert_secondary=invert_secondary)
+        slicer.app.setStyleSheet(stylesheet)
+    
     def setDefaultParameters(self, parameterNode):
         """
         Initialize parameter node with default settings.
         """
-        if not parameterNode.GetParameter("Threshold"):
-            parameterNode.SetParameter("Threshold", "100.0")
-        if not parameterNode.GetParameter("Invert"):
-            parameterNode.SetParameter("Invert", "false")
+        pass
 
-    def process(self, inputVolume, outputVolume, imageThreshold, invert=False, showResult=True):
-        """
-        Run the processing algorithm.
-        Can be used without GUI widget.
-        :param inputVolume: volume to be thresholded
-        :param outputVolume: thresholding result
-        :param imageThreshold: values above/below this threshold will be set to 0
-        :param invert: if True then values above the threshold will be set to 0, otherwise values below are set to 0
-        :param showResult: show output volume in slice viewers
-        """
-
-        if not inputVolume or not outputVolume:
-            raise ValueError("Input or output volume is invalid")
-
-        import time
-        startTime = time.time()
-        logging.info('Processing started')
-
-        # Compute the thresholded output volume using the "Threshold Scalar Volume" CLI module
-        cliParams = {
-            'InputVolume': inputVolume.GetID(),
-            'OutputVolume': outputVolume.GetID(),
-            'ThresholdValue': imageThreshold,
-            'ThresholdType': 'Above' if invert else 'Below'
-        }
-        cliNode = slicer.cli.run(slicer.modules.thresholdscalarvolume, None, cliParams, wait_for_completion=True, update_display=showResult)
-        # We don't need the CLI module node anymore, remove it to not clutter the scene with it
-        slicer.mrmlScene.RemoveNode(cliNode)
-
-        stopTime = time.time()
-        logging.info(f'Processing completed in {stopTime-startTime:.2f} seconds')
+    
 
 
 #
@@ -340,34 +380,6 @@ class ThemesTest(ScriptedLoadableModuleTest):
 
         self.delayDisplay("Starting the test")
 
-        # Get/create input data
-
-        import SampleData
-        registerSampleData()
-        inputVolume = SampleData.downloadSample('Themes1')
-        self.delayDisplay('Loaded test data set')
-
-        inputScalarRange = inputVolume.GetImageData().GetScalarRange()
-        self.assertEqual(inputScalarRange[0], 0)
-        self.assertEqual(inputScalarRange[1], 695)
-
-        outputVolume = slicer.mrmlScene.AddNewNodeByClass("vtkMRMLScalarVolumeNode")
-        threshold = 100
-
-        # Test the module logic
-
-        logic = ThemesLogic()
-
-        # Test algorithm with non-inverted threshold
-        logic.process(inputVolume, outputVolume, threshold, True)
-        outputScalarRange = outputVolume.GetImageData().GetScalarRange()
-        self.assertEqual(outputScalarRange[0], inputScalarRange[0])
-        self.assertEqual(outputScalarRange[1], threshold)
-
-        # Test algorithm with inverted threshold
-        logic.process(inputVolume, outputVolume, threshold, False)
-        outputScalarRange = outputVolume.GetImageData().GetScalarRange()
-        self.assertEqual(outputScalarRange[0], inputScalarRange[0])
-        self.assertEqual(outputScalarRange[1], inputScalarRange[1])
+        
 
         self.delayDisplay('Test passed')

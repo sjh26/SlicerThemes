@@ -86,6 +86,8 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.logic = ThemesLogic()
 
         self.populateThemesList()
+        self.populateStylesList()
+
 
         # Buttons
         self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
@@ -142,8 +144,12 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             self.ui.ThemeComboBox.addItem(theme)
         self.enter()
     
-    # def onReload(self):
-    #     self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
+    def populateStylesList(self):
+        self.templateDict = self.logic.getAvailableQSSTemplates()
+        self.ui.StyleComboBox.clear()
+
+        for name in self.templateDict.keys():
+            self.ui.StyleComboBox.addItem(name)
     
     
     def cleanup(self):
@@ -259,7 +265,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.applyButton.text = 'Loading theme...'
         slicer.app.processEvents()
         themeDictionary = self.getThemeDictionary()
-        self.logic.applyThemeForSlicer(themeDictionary, self.ui.StyleComboBox.currentText,self.ui.InvertCheckBox.checked)
+        self.logic.applyThemeForSlicer(themeDictionary, self.templateDict[self.ui.StyleComboBox.currentText],self.ui.InvertCheckBox.checked)
         self.ui.applyButton.enabled = True
         self.ui.clearButton.enabled = True
         self.ui.applyButton.text = 'Apply Theme'
@@ -333,7 +339,7 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         return tempFilePath
     
     
-    def applyThemeForSlicer(self,themeDictionary=None, style='Slicer',invert_secondary=True):
+    def applyThemeForSlicer(self,themeDictionary=None, template='Slicer',invert_secondary=True):
         try:
             import qt_material
         except:
@@ -346,18 +352,20 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         
         themeFileName = self.createThemeFile(themeDictionary)
 
-        print(style)
-
-        if style == 'Slicer':
-            template = self.resourcePath('slicer.classic.css.template')
-        else:
-            template = self.resourcePath('slicer.material.css.template')
-
         from qt_material import build_stylesheet
         extra = {'density_scale': '-2'}
         stylesheet = build_stylesheet(theme=themeFileName,template=template, extra=extra, invert_secondary=invert_secondary)
         slicer.app.setStyleSheet(stylesheet)
     
+    
+    def getAvailableQSSTemplates(self):
+        templates = os.listdir(self.resourcePath('Templates'))
+        templateLookup = {}
+        for template in templates:
+            parts = template.split('.')
+            templateLookup['-'.join(parts[:-2])] = os.path.join(self.resourcePath('Templates'),template )
+        return templateLookup
+
     def setDefaultParameters(self, parameterNode):
         """
         Initialize parameter node with default settings.

@@ -83,7 +83,7 @@ QWidget {
 QGroupBox,
 QFrame {
   background-color: {{secondaryDarkColor}};
-  border: 2px solid {{secondaryLightColor}};
+  border: none;
   border-radius: 4px;
 }
 

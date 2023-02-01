@@ -9,6 +9,11 @@ set(MODULE_PYTHON_SCRIPTS
 set(MODULE_PYTHON_RESOURCES
   Resources/Icons/${MODULE_NAME}.png
   Resources/UI/${MODULE_NAME}.ui
+  Resources/Templates/qt.material.css.template
+  Resources/Templates/slicer.material.css.template
+  Resources/Templates/slicer.classic.css.template
+  Colors/dark_slicer.xml
+  Colors/light_slicer.xml
   )
 
 #-----------------------------------------------------------------------------

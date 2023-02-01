@@ -91,10 +91,14 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
         self.ui.clearButton.clicked.connect(self.onClearButton)
         self.ui.ThemeComboBox.currentTextChanged.connect(self.onThemeSelectionChanged)
+        self.ui.loadColorThemeButton.clicked.connect(self.onLoadColorThemeButton)
 
         # Make sure parameter node is initialized (needed for module reload)
         self.initializeParameterNode()
+        
 
+    
+    
     
     def onThemeSelectionChanged(self, text):
         self.ui.InvertCheckBox.checked = 'light_' in text
@@ -135,10 +139,10 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         for theme in themes:
             self.ui.ThemeComboBox.addItem(theme)
-
+        self.enter()
     
-    def onReload(self):
-        self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
+    # def onReload(self):
+    #     self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
     
     
     def cleanup(self):
@@ -153,6 +157,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         """
         # Make sure parameter node exists and observed
         self.initializeParameterNode()
+        self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
 
     def exit(self):
         """
@@ -262,8 +267,11 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     def onClearButton(self):
         slicer.app.styleSheet = ''
 
-    
-        
+    def onLoadColorThemeButton(self):
+
+        colorThemePath = qt.QFileDialog.getOpenFileName(None,"Open color theme file", "~/", "XML Files (*.xml)")
+        self.ui.ThemeComboBox.addItem(colorThemePath)
+        self.ui.ThemeComboBox.currentText = colorThemePath
 
 
 #
@@ -292,6 +300,14 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         scriptedModulesPath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         return os.path.join(scriptedModulesPath, 'Resources', filename)
     
+    
+    def exportThemeFile(self, themeDictionary, themeFileName)
+
+        tempPath = self.createThemeFile(themeDictionary)
+
+        import shutil
+        shutil.copyfile(tempPath, themeFileName)
+
     
     def createThemeFile(self, themeDictionary):
         templatePath = self.resourcePath('theme.xml.template')

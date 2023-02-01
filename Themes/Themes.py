@@ -108,7 +108,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         from qt_material import get_theme
 
-        colors = get_theme(text)
+        path = self.colors[text]
+
+        colors = get_theme(path)
 
         self.ui.primaryColorPickerButton.setColor(qt.QColor(colors['primaryColor']))
         self.ui.primaryLightColorPickerButton.setColor(qt.QColor(colors['primaryLightColor']))
@@ -135,11 +137,17 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     def populateColors(self):
         from qt_material import list_themes
 
-        colors = list_themes()
+        self.colors = {}
+        colors_list = list_themes()
+
+        for c in colors_list:
+            self.colors[c] = c
+
+        self.colors.update(self.logic.getAvailableColorFiles())
 
         self.ui.ColorsComboBox.clear()
 
-        for color in colors:
+        for color in self.colors:
             self.ui.ColorsComboBox.addItem(color)
         self.enter()
     
@@ -275,8 +283,10 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         colorPath = qt.QFileDialog.getOpenFileName(None,"Open color file", "~/", "XML Files (*.xml)")
         if colorPath:
-            self.ui.ColorsComboBox.addItem(colorPath)
-            self.ui.ColorsComboBox.currentText = colorPath
+            name = os.path.basename(colorPath)
+            self.colors[name] = colorPath
+            self.ui.ColorsComboBox.addItem(name)
+            self.ui.ColorsComboBox.currentText = name
 
     def onExportColorsButtonClicked(self):
         colorPath = qt.QFileDialog.getSaveFileName(None,"Save color file", "~/", "XML Files (*.xml)")
@@ -348,6 +358,10 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
 
         from qt_material import build_stylesheet
         extra = {'density_scale': '-2'}
+        if 'slicer.classic' in template:
+            extra['font_family'] = slicer.app.font().family()
+            extra['font_size'] = '16'
+            print(slicer.app.font().family())
         stylesheet = build_stylesheet(theme=colorPath,template=template, extra=extra, invert_secondary=invert_secondary)
         slicer.app.setStyleSheet(stylesheet)
     
@@ -360,6 +374,16 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
             templateLookup['-'.join(parts[:-2])] = os.path.join(self.resourcePath('Templates'),template )
         return templateLookup
 
+   
+    def getAvailableColorFiles(self):
+        colors = os.listdir(self.resourcePath('Colors'))
+        colorsLookup = {}
+        for color in colors:
+            name = os.path.basename(color)
+            colorsLookup[name] = os.path.join(self.resourcePath('Colors'),color )
+        return colorsLookup
+
+    
     def setDefaultParameters(self, parameterNode):
         """
         Initialize parameter node with default settings.

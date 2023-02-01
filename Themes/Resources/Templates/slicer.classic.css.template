@@ -80,7 +80,6 @@ QWidget {
   background-color: {{secondaryDarkColor}};
 }
 
-
 QGroupBox,
 QFrame {
   background-color: {{secondaryDarkColor}};
@@ -129,8 +128,8 @@ QLineEdit,
 QPushButton {
   color: {{primaryColor}};
   background-color: {{secondaryDarkColor}};
-  border: 1px solid {{primaryColor}};
-  border-radius: 6px;
+  border: 2px solid {{primaryColor}};
+  border-radius: 4px;
   height: {{36|density(density_scale, border=2)}}px;
 }
 
@@ -142,9 +141,12 @@ QListView,
 QLineEdit,
 QComboBox {
   padding-left: {{16|density(density_scale)}}px;
-  border: 1px solid {{primaryColor}};
-  border-radius: 6px;
+  border-radius: 0px;
   background-color: {{secondaryColor}};
+  border-width: 0 0 2px 0;
+  border-radius: 0px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   height: {{36|density(density_scale, border=2)}}px;
 }
 
@@ -183,8 +185,11 @@ QLineEdit:disabled {
 QComboBox {
   color: {{primaryColor}};
   border: 1px solid {{primaryColor}};
-  border-radius: 6px;
+  border-width: 0 0 2px 0;
   background-color: {{secondaryColor}};
+  border-radius: 0px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   height: {{36|density(density_scale, border=2)}}px;
 }
 
@@ -267,7 +272,7 @@ QSpinBox::down-button:disabled {
 /*  QPushButton  */
 
 QPushButton {
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   margin: 0px;
   padding: {{1|density(density_scale)}}px {{16|density(density_scale)}}px;
   height: {{36|density(density_scale, border=2)}}px;
@@ -330,7 +335,7 @@ QPushButton:checked:disabled {
 /*  QTabBar  */
 
 QTabBar{
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   font-weight: bold;
 }
 
@@ -377,44 +382,33 @@ QTabBar::tab:left:hover {
 
 QTabBar QToolButton:hover,
 QTabBar QToolButton {
-  border: 20px;
-  background-color: {{secondaryDarkColor}};
+  border: 0px;
+  background-color: {{secondaryColor}};
+  background: {{secondaryColor}};
 }
 
 QTabBar QToolButton::up-arrow {
-  image: url(icon:/disabled/uparrow2.svg);
-}
-
-QTabBar QToolButton::up-arrow:hover {
   image: url(icon:/primary/uparrow2.svg);
+  width: {{28|density(density_scale)}}px;
 }
 
 QTabBar QToolButton::down-arrow {
-  image: url(icon:/disabled/downarrow2.svg);
-}
-
-QTabBar QToolButton::down-arrow:hover {
   image: url(icon:/primary/downarrow2.svg);
+  width: {{28|density(density_scale)}}px;
 }
 
 QTabBar QToolButton::right-arrow {
-  image: url(icon:/primary/rightarrow2.svg);
-}
-
-QTabBar QToolButton::right-arrow:hover {
   image: url(icon:/disabled/rightarrow2.svg);
+  height: {{28|density(density_scale)}}px;
 }
 
 QTabBar QToolButton::left-arrow {
-  image: url(icon:/primary/leftarrow2.svg);
-}
-
-QTabBar QToolButton::left-arrow:hover {
   image: url(icon:/disabled/leftarrow2.svg);
+  height: {{28|density(density_scale)}}px;
 }
 
 QTabBar::close-button {
-  image: url(icon:/disabled/tab_close.svg);
+  image: url(icon:/primary/tab_close.svg);
 }
 
 QTabBar::close-button:hover {
@@ -428,7 +422,7 @@ QGroupBox {
   padding: {{16|density(density_scale)}}px;
   padding-top: {{36|density(density_scale)}}px;
   line-height: {{font_size}};
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   font-size: {{font_size}};
 }
 
@@ -618,7 +612,7 @@ QRadioButton::indicator:unchecked:disabled {
 
 QDockWidget {
   color: {{secondaryTextColor}};
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   border: 2px solid {{secondaryColor}};
   titlebar-close-icon: url(icon:/primary/close.svg);
   titlebar-normal-icon: url(icon:/primary/float.svg);
@@ -774,7 +768,7 @@ QMenuBar::item:pressed {
 QToolBox::tab {
   background-color: {{secondaryColor}};
   color: {{secondaryTextColor}};
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   border-radius: 4px;
   padding-left: 15px;
 }
@@ -1212,7 +1206,7 @@ QHeaderView {
 
 QHeaderView::section {
   color: {{secondaryTextColor|opacity(0.7)}};
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   background-color: {{secondaryColor}};
   padding: 0 {{24|density(density_scale)}}px;
   height: {{36|density(density_scale)}}px;
@@ -1334,52 +1328,49 @@ QMenuBar QToolButton {
   background-color: transparent;
 }
 
-/* --------------------------------------------- */
-/* Slicer widget styling */
+/* Minimal tweaks for Slicer */
+
 ctkCollapsibleButton { /*Same as push button */
   color: {{primaryColor}};
   background-color: {{secondaryDarkColor}};
-  border: 1px solid {{primaryColor}};
-  border-radius: 6px;
+  border: 2px solid {{primaryColor}};
+  border-radius: 4px;
   height: {{36|density(density_scale, border=2)}}px;
 }
 
-/*  Tweaks to existing template*/
-/* QPushButton,
-ctkExpandButton,
-QComboBox,
-ctkCollapsibleButton{
-  color: {{secondaryColor}};
-  text-transform: none;
-  background-color: {{primaryColor}};
-}
-
-ctkConsole{
-  color:{{secondaryDarkColor}};
-}
-
-QComboBox
-{
-
-} */
-
 /* QToolButton height cleared in code above */
 
-/* QPushButton{
-  border: 2px solid {{secondaryDarkColor}};
+ctkCollapsibleGroupBox::indicator:checked
+{
+  image: url(icon:/primary/downarrow.svg);
 }
 
-QPushButton:checked,
-QPushButton:pressed,
-ctkCollapsibleButton:pressed {
+ctkCollapsibleGroupBox::indicator:unchecked
+{
+  image: url(icon:/primary/rightarrow.svg);
+}
+
+ctkCollapsibleGroupBox::indicator:checked:disabled {
+  image: url(icon:/disabled/downarrow.svg);
+
+}
+
+ctkCollapsibleGroupBox::indicator:unchecked:disabled {
+  image: url(icon:/disabled/rightarrow.svg);
+
+}
+
+/* Slicer classic tweaks */
+
+QComboBox,
+ctkCollapsibleButton,
+QPushButton{
   color: {{primaryColor}};
-  background-color: {{secondaryDarkColor}};
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 {{secondaryColor}}, stop: 1 {{primaryLightColor}});
+  border: 1px solid {{primaryTextColor}};
+  border-radius: 4px;
+  height: {{36|density(density_scale, border=2)}}px;
+  text-transform: none;
+  font-weight: normal;
+
 }
-
-QSlider::handle:horizontal {
-  image: url(icon:/primary/slider.svg);
-  width: {{20|density(density_scale)}}px;
-  height: {{20|density(density_scale)}}px;
-  margin: -{{24|density(density_scale)}}px -{{12|density(density_scale)}}px;
-} */
-

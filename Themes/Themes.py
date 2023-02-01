@@ -92,6 +92,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.clearButton.clicked.connect(self.onClearButton)
         self.ui.ThemeComboBox.currentTextChanged.connect(self.onThemeSelectionChanged)
         self.ui.loadColorThemeButton.clicked.connect(self.onLoadColorThemeButton)
+        self.ui.saveThemeButton.clicked.connect(self.onExportButtonClicked)
 
         # Make sure parameter node is initialized (needed for module reload)
         self.initializeParameterNode()
@@ -261,7 +262,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.logic.applyThemeForSlicer(themeDictionary, self.ui.StyleComboBox.currentText,self.ui.InvertCheckBox.checked)
         self.ui.applyButton.enabled = True
         self.ui.clearButton.enabled = True
-        self.ui.applyButton.text = 'Load Theme'
+        self.ui.applyButton.text = 'Apply Theme'
         print('applying done')
 
     def onClearButton(self):
@@ -272,6 +273,12 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         colorThemePath = qt.QFileDialog.getOpenFileName(None,"Open color theme file", "~/", "XML Files (*.xml)")
         self.ui.ThemeComboBox.addItem(colorThemePath)
         self.ui.ThemeComboBox.currentText = colorThemePath
+
+    def onExportButtonClicked(self):
+        colorThemePath = qt.QFileDialog.getSaveFileName(None,"Save color theme file", "~/", "XML Files (*.xml)")
+
+        theme = self.getThemeDictionary()
+        self.logic.exportThemeFile(theme, colorThemePath)
 
 
 #
@@ -301,7 +308,7 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         return os.path.join(scriptedModulesPath, 'Resources', filename)
     
     
-    def exportThemeFile(self, themeDictionary, themeFileName)
+    def exportThemeFile(self, themeDictionary, themeFileName):
 
         tempPath = self.createThemeFile(themeDictionary)
 

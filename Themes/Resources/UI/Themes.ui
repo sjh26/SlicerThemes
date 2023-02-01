@@ -16,12 +16,12 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>Style</string>
+        <string>Template:</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="StyleComboBox">
+      <widget class="QComboBox" name="TemplateComboBox">
        <item>
         <property name="text">
          <string>Slicer</string>
@@ -37,12 +37,12 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Color themes (built-in):</string>
+        <string>Colors:</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="ThemeComboBox"/>
+      <widget class="QComboBox" name="ColorsComboBox"/>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_10">
@@ -129,20 +129,13 @@
       <widget class="ctkColorPickerButton" name="secondaryTextColorPickerButton"/>
      </item>
      <item row="2" column="0" colspan="2">
-      <widget class="QPushButton" name="loadColorThemeButton">
+      <widget class="QPushButton" name="loadColorsButton">
        <property name="text">
-        <string>Load color theme from file</string>
+        <string>Load colors from file</string>
        </property>
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="saveThemeButton">
-     <property name="text">
-      <string>Save color theme to file</string>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="applyButton">
@@ -161,6 +154,20 @@
     <widget class="QPushButton" name="clearButton">
      <property name="text">
       <string>Clear Theme</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="exportColorsButton">
+     <property name="text">
+      <string>Export colors to file</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="exportThemeButton">
+     <property name="text">
+      <string>Export theme to file</string>
      </property>
     </widget>
    </item>

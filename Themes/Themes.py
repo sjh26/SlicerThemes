@@ -85,16 +85,16 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         # in batch mode, without a graphical user interface.
         self.logic = ThemesLogic()
 
-        self.populateThemesList()
-        self.populateStylesList()
+        self.populateColors()
+        self.populateTemplates()
 
 
         # Buttons
         self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
         self.ui.clearButton.clicked.connect(self.onClearButton)
-        self.ui.ThemeComboBox.currentTextChanged.connect(self.onThemeSelectionChanged)
-        self.ui.loadColorThemeButton.clicked.connect(self.onLoadColorThemeButton)
-        self.ui.saveThemeButton.clicked.connect(self.onExportButtonClicked)
+        self.ui.ColorsComboBox.currentTextChanged.connect(self.onColorsSelectionChanged)
+        self.ui.loadColorsButton.clicked.connect(self.onLoadColorsButton)
+        self.ui.exportColorsButton.clicked.connect(self.onExportColorsButtonClicked)
 
         # Make sure parameter node is initialized (needed for module reload)
         self.initializeParameterNode()
@@ -103,53 +103,52 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     
     
     
-    def onThemeSelectionChanged(self, text):
+    def onColorsSelectionChanged(self, text):
         self.ui.InvertCheckBox.checked = 'light_' in text
 
         from qt_material import get_theme
 
-        theme = get_theme(text)
+        colors = get_theme(text)
 
-        self.ui.primaryColorPickerButton.setColor(qt.QColor(theme['primaryColor']))
-        self.ui.primaryLightColorPickerButton.setColor(qt.QColor(theme['primaryLightColor']))
-        self.ui.secondaryColorPickerButton.setColor(qt.QColor(theme['secondaryColor']))
-        self.ui.secondaryLightColorPickerButton.setColor(qt.QColor(theme['secondaryLightColor']))
-        self.ui.secondaryDarkColorPickerButton.setColor(qt.QColor(theme['secondaryDarkColor']))
-        self.ui.primaryTextColorPickerButton.setColor(qt.QColor(theme['primaryTextColor']))
-        self.ui.secondaryTextColorPickerButton.setColor(qt.QColor(theme['secondaryTextColor']))
+        self.ui.primaryColorPickerButton.setColor(qt.QColor(colors['primaryColor']))
+        self.ui.primaryLightColorPickerButton.setColor(qt.QColor(colors['primaryLightColor']))
+        self.ui.secondaryColorPickerButton.setColor(qt.QColor(colors['secondaryColor']))
+        self.ui.secondaryLightColorPickerButton.setColor(qt.QColor(colors['secondaryLightColor']))
+        self.ui.secondaryDarkColorPickerButton.setColor(qt.QColor(colors['secondaryDarkColor']))
+        self.ui.primaryTextColorPickerButton.setColor(qt.QColor(colors['primaryTextColor']))
+        self.ui.secondaryTextColorPickerButton.setColor(qt.QColor(colors['secondaryTextColor']))
 
-        print(self.ui.secondaryTextColorPickerButton.text)
+   
+    
+    def getCurrentColors(self):
+        colors = {}
+        colors['primaryColor'] = self.ui.primaryColorPickerButton.color.name()
+        colors['primaryLightColor'] = self.ui.primaryLightColorPickerButton.color.name()
+        colors['secondaryColor'] = self.ui.secondaryColorPickerButton.color.name()
+        colors['secondaryLightColor'] = self.ui.secondaryLightColorPickerButton.color.name()
+        colors['secondaryDarkColor'] = self.ui.secondaryDarkColorPickerButton.color.name()
+        colors['primaryTextColor'] = self.ui.primaryTextColorPickerButton.color.name()
+        colors['secondaryTextColor'] = self.ui.secondaryTextColorPickerButton.color.name()
+        return colors
     
     
-    def getThemeDictionary(self):
-        theme = {}
-        theme['primaryColor'] = self.ui.primaryColorPickerButton.color.name()
-        theme['primaryLightColor'] = self.ui.primaryLightColorPickerButton.color.name()
-        theme['secondaryColor'] = self.ui.secondaryColorPickerButton.color.name()
-        theme['secondaryLightColor'] = self.ui.secondaryLightColorPickerButton.color.name()
-        theme['secondaryDarkColor'] = self.ui.secondaryDarkColorPickerButton.color.name()
-        theme['primaryTextColor'] = self.ui.primaryTextColorPickerButton.color.name()
-        theme['secondaryTextColor'] = self.ui.secondaryTextColorPickerButton.color.name()
-        return theme
-    
-    
-    def populateThemesList(self):
+    def populateColors(self):
         from qt_material import list_themes
 
-        themes = list_themes()
+        colors = list_themes()
 
-        self.ui.ThemeComboBox.clear()
+        self.ui.ColorsComboBox.clear()
 
-        for theme in themes:
-            self.ui.ThemeComboBox.addItem(theme)
+        for color in colors:
+            self.ui.ColorsComboBox.addItem(color)
         self.enter()
     
-    def populateStylesList(self):
-        self.templateDict = self.logic.getAvailableQSSTemplates()
-        self.ui.StyleComboBox.clear()
+    def populateTemplates(self):
+        self.templates = self.logic.getAvailableQSSTemplates()
+        self.ui.TemplateComboBox.clear()
 
-        for name in self.templateDict.keys():
-            self.ui.StyleComboBox.addItem(name)
+        for name in self.templates.keys():
+            self.ui.TemplateComboBox.addItem(name)
     
     
     def cleanup(self):
@@ -164,7 +163,7 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         """
         # Make sure parameter node exists and observed
         self.initializeParameterNode()
-        self.onThemeSelectionChanged(self.ui.ThemeComboBox.currentText)
+        self.onColorsSelectionChanged(self.ui.ColorsComboBox.currentText)
 
     def exit(self):
         """
@@ -264,8 +263,8 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.clearButton.enabled = False
         self.ui.applyButton.text = 'Loading theme...'
         slicer.app.processEvents()
-        themeDictionary = self.getThemeDictionary()
-        self.logic.applyThemeForSlicer(themeDictionary, self.templateDict[self.ui.StyleComboBox.currentText],self.ui.InvertCheckBox.checked)
+        colors = self.getCurrentColors()
+        self.logic.applyThemeForSlicer(colors, self.templates[self.ui.TemplateComboBox.currentText],self.ui.InvertCheckBox.checked)
         self.ui.applyButton.enabled = True
         self.ui.clearButton.enabled = True
         self.ui.applyButton.text = 'Apply Theme'
@@ -274,17 +273,17 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     def onClearButton(self):
         slicer.app.styleSheet = ''
 
-    def onLoadColorThemeButton(self):
+    def onLoadColorsButton(self):
 
-        colorThemePath = qt.QFileDialog.getOpenFileName(None,"Open color theme file", "~/", "XML Files (*.xml)")
-        self.ui.ThemeComboBox.addItem(colorThemePath)
-        self.ui.ThemeComboBox.currentText = colorThemePath
+        colorPath = qt.QFileDialog.getOpenFileName(None,"Open color file", "~/", "XML Files (*.xml)")
+        self.ui.ColorsComboBox.addItem(colorPath)
+        self.ui.ColorsComboBox.currentText = colorPath
 
-    def onExportButtonClicked(self):
-        colorThemePath = qt.QFileDialog.getSaveFileName(None,"Save color theme file", "~/", "XML Files (*.xml)")
+    def onExportColorsButtonClicked(self):
+        colorPath = qt.QFileDialog.getSaveFileName(None,"Save color file", "~/", "XML Files (*.xml)")
 
-        theme = self.getThemeDictionary()
-        self.logic.exportThemeFile(theme, colorThemePath)
+        colors = self.getCurrentColors()
+        self.logic.exportColorFile(colors, colorPath)
 
 
 #
@@ -314,23 +313,23 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         return os.path.join(scriptedModulesPath, 'Resources', filename)
     
     
-    def exportThemeFile(self, themeDictionary, themeFileName):
+    def exportColorFile(self, colors, colorPath):
 
-        tempPath = self.createThemeFile(themeDictionary)
+        tempPath = self.createColorFile(colors)
 
         import shutil
-        shutil.copyfile(tempPath, themeFileName)
+        shutil.copyfile(tempPath, colorPath)
 
     
-    def createThemeFile(self, themeDictionary):
+    def createColorFile(self, colors):
         templatePath = self.resourcePath('theme.xml.template')
         with open(templatePath) as fp:
             contents = fp.read()
 
-        for color, value in themeDictionary.items():
+        for color, value in colors.items():
             contents = contents.replace(color+'Key', value)
 
-        tempFilePath = os.path.join(slicer.app.temporaryPath,'theme.xml')
+        tempFilePath = os.path.join(slicer.app.temporaryPath,'colors.xml')
 
         with open (tempFilePath, 'w') as fp:
             fp.write(contents)
@@ -339,22 +338,19 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         return tempFilePath
     
     
-    def applyThemeForSlicer(self,themeDictionary=None, template='Slicer',invert_secondary=True):
+    def applyThemeForSlicer(self,colors, template, invert_secondary=True):
         try:
             import qt_material
         except:
             print('Please install qt-material')
             return
 
-        if themeDictionary is None:
-            slicer.app.styleSheet = ''
-            return
-        
-        themeFileName = self.createThemeFile(themeDictionary)
+           
+        colorPath = self.createColorFile(colors)
 
         from qt_material import build_stylesheet
         extra = {'density_scale': '-2'}
-        stylesheet = build_stylesheet(theme=themeFileName,template=template, extra=extra, invert_secondary=invert_secondary)
+        stylesheet = build_stylesheet(theme=colorPath,template=template, extra=extra, invert_secondary=invert_secondary)
         slicer.app.setStyleSheet(stylesheet)
     
     

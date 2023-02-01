@@ -84,7 +84,8 @@ QWidget {
 QGroupBox,
 QFrame {
   background-color: {{secondaryDarkColor}};
-  border: 2px solid {{secondaryLightColor}};
+  /* border: 2px solid {{secondaryLightColor}}; */
+  border: none;
   border-radius: 4px;
 }
 
@@ -1354,20 +1355,24 @@ ctkCollapsibleButton { /*Same as push button */
 QPushButton,
 ctkExpandButton,
 ctkCollapsibleButton{
-  color: {{secondaryColor}};
+  color: {{primaryColor}};
   text-transform: none;
-  background-color: {{primaryColor}};
+  background-color: {{secondaryColor}};
+  border: 2px solid {{secondaryDarkColor}};
 }
 
-ctkConsole{
-  color:{{secondaryDarkColor}};
+ctkConsole
+{
+  qproperty-promptColor: {{primaryColor}};
+  qproperty-outputTextColor: {{primaryColor}};
+  qproperty-commandTextColor: {{secondaryDarkColor}};
 }
+ctkConsolePrivate{background-color: {{secondaryColor}};}
+
+
 
 /* QToolButton height cleared in code above */
 
-QPushButton{
-  border: 2px solid {{secondaryDarkColor}};
-}
 
 QPushButton:checked,
 QPushButton:pressed,

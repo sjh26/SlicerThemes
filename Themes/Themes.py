@@ -258,7 +258,6 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         Run processing when user clicks "Apply" button.
 
         """
-        print('applying')
         self.ui.applyButton.enabled = False
         self.ui.clearButton.enabled = False
         self.ui.applyButton.text = 'Loading theme...'
@@ -268,7 +267,6 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.ui.applyButton.enabled = True
         self.ui.clearButton.enabled = True
         self.ui.applyButton.text = 'Apply Theme'
-        print('applying done')
 
     def onClearButton(self):
         slicer.app.styleSheet = ''
@@ -276,14 +274,15 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     def onLoadColorsButton(self):
 
         colorPath = qt.QFileDialog.getOpenFileName(None,"Open color file", "~/", "XML Files (*.xml)")
-        self.ui.ColorsComboBox.addItem(colorPath)
-        self.ui.ColorsComboBox.currentText = colorPath
+        if colorPath:
+            self.ui.ColorsComboBox.addItem(colorPath)
+            self.ui.ColorsComboBox.currentText = colorPath
 
     def onExportColorsButtonClicked(self):
         colorPath = qt.QFileDialog.getSaveFileName(None,"Save color file", "~/", "XML Files (*.xml)")
-
-        colors = self.getCurrentColors()
-        self.logic.exportColorFile(colors, colorPath)
+        if colorPath:
+            colors = self.getCurrentColors()
+            self.logic.exportColorFile(colors, colorPath)
 
 
 #
@@ -334,7 +333,6 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         with open (tempFilePath, 'w') as fp:
             fp.write(contents)
 
-        print(tempFilePath)
         return tempFilePath
     
     

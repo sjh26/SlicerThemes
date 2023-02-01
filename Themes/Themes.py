@@ -84,6 +84,15 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         # Create logic class. Logic implements all computations that should be possible to run
         # in batch mode, without a graphical user interface.
         self.logic = ThemesLogic()
+        try:
+            import qt_material
+            self.ui.warningLabel.text = ''
+        except:
+            self.ui.warningLabel.text = 'Please click below to install qt-material'
+            self.ui.warningLabel.styleSheet = "color: red;"
+
+        self.ui.installQtMaterialButton.clicked.connect(self.onInstallQtMaterialButtonClicked)
+
 
         self.populateColors()
         self.populateTemplates()
@@ -100,7 +109,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         self.initializeParameterNode()
         
 
-    
+    def onInstallQtMaterialButtonClicked(self):
+        self.logic.installQtMaterial()
+        self.reloadButton.click()
     
     
     def onColorsSelectionChanged(self, text):
@@ -321,6 +332,9 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         scriptedModulesPath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         return os.path.join(scriptedModulesPath, 'Resources', filename)
     
+    
+    def installQtMaterial(self):
+        slicer.util.pip_install('\'qt-material @ git+https://github.com/sjh26/qt-material@1daabefe7f39d82a510ebeab2f26b3b70c5d7c1c\'')
     
     def exportColorFile(self, colors, colorPath):
 

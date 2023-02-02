@@ -1366,7 +1366,7 @@ QComboBox,
 ctkCollapsibleButton,
 QPushButton{
   color: {{primaryColor}};
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 {{secondaryColor}}, stop: 1 {{primaryLightColor}});
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 {{secondaryColor}}, stop: 1 {{secondaryLightColor}});
   border: 1px solid {{primaryTextColor}};
   border-radius: 4px;
   height: {{36|density(density_scale, border=2)}}px;

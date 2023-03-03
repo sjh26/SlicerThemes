@@ -367,8 +367,10 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
             print('Please install qt-material')
             return
 
-           
-        colorPath = self.createColorFile(colors)
+        if isinstance(colors, dict):
+            colorPath = self.createColorFile(colors)
+        else:
+            colorPath = colors
 
         from qt_material import build_stylesheet
         extra = {'density_scale': '-2'}

@@ -12,8 +12,10 @@ set(MODULE_PYTHON_RESOURCES
   Resources/Templates/qt.material.css.template
   Resources/Templates/slicer.material.css.template
   Resources/Templates/slicer.classic.css.template
-  Colors/dark_slicer.xml
-  Colors/light_slicer.xml
+  Resources/Colors/dark_slicer.xml
+  Resources/Colors/light_slicer.xml
+  Resources/Colors/light_slicer2.xml
+  Resources/Colors/dark_nous-nav.xml
   )
 
 #-----------------------------------------------------------------------------

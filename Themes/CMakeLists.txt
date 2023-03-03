@@ -14,7 +14,7 @@ set(MODULE_PYTHON_RESOURCES
   Resources/Templates/slicer.classic.css.template
   Resources/Colors/dark_slicer.xml
   Resources/Colors/light_slicer.xml
-  Resources/Colors/light_slicer2.xml
+  Resources/Colors/light_slicer_2.xml
   Resources/Colors/dark_nous-nav.xml
   )
 

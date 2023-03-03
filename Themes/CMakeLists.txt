@@ -16,6 +16,7 @@ set(MODULE_PYTHON_RESOURCES
   Resources/Colors/light_slicer.xml
   Resources/Colors/light_slicer_2.xml
   Resources/Colors/dark_nous-nav.xml
+  Resources/theme.xml.template
   )
 
 #-----------------------------------------------------------------------------

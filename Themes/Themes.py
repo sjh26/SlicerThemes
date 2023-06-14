@@ -21,12 +21,12 @@ class Themes(ScriptedLoadableModule):
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
         self.parent.title = "Themes"  # TODO: make this more human readable by adding spaces
-        self.parent.categories = ["Examples"]  # TODO: set categories (folders where the module shows up in the module selector)
+        self.parent.categories = ["Utilities"]  # TODO: set categories (folders where the module shows up in the module selector)
         self.parent.dependencies = []  # TODO: add here list of module names that this module requires
-        self.parent.contributors = ["John Doe (AnyWare Corp.)"]  # TODO: replace with "Firstname Lastname (Organization)"
+        self.parent.contributors = ["Sam Horvath (Kitware)"]  # TODO: replace with "Firstname Lastname (Organization)"
         # TODO: update with short description of the module and a link to online module documentation
         self.parent.helpText = """
-This is an example of scripted loadable module bundled in an extension.
+This scripted module uses the qt-material package to update the color theme of Slicer.
 See more information in <a href="https://github.com/organization/projectname#Themes">module documentation</a>.
 """
         # TODO: replace with organization, grant and thanks
@@ -84,20 +84,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         # Create logic class. Logic implements all computations that should be possible to run
         # in batch mode, without a graphical user interface.
         self.logic = ThemesLogic()
-        try:
-            import qt_material
-            self.ui.warningLabel.text = ''
-        except:
-            self.ui.warningLabel.text = 'Please click below to install qt-material'
-            self.ui.warningLabel.styleSheet = "color: red;"
+        
 
         self.ui.installQtMaterialButton.clicked.connect(self.onInstallQtMaterialButtonClicked)
-
-
-        self.populateColors()
-        self.populateTemplates()
-
-
         # Buttons
         self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
         self.ui.clearButton.clicked.connect(self.onClearButton)
@@ -111,9 +100,27 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     def onInstallQtMaterialButtonClicked(self):
         self.logic.installQtMaterial()
-        self.reloadButton.click()
+        self.checkForQtMaterial()
     
     
+    def checkForQtMaterial(self):
+        try:
+            import qt_material
+            self.ui.warningLabel.text = ''
+            self.ui.installQtMaterialButton.visible = False
+            self.populateColors()
+            self.populateTemplates()
+            self.ui.applyButton.enabled = True
+            return True
+        except:
+            self.ui.warningLabel.text = 'Please click below to install qt-material'
+            self.ui.warningLabel.styleSheet = "color: red;"
+            self.ui.applyButton.enabled = False
+            self.ui.installQtMaterialButton.visible = True
+            return False
+            
+
+
     def onColorsSelectionChanged(self, text):
         self.ui.InvertCheckBox.checked = 'light_' in text
 
@@ -160,7 +167,6 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         for color in self.colors:
             self.ui.ColorsComboBox.addItem(color)
-        self.enter()
     
     def populateTemplates(self):
         self.templates = self.logic.getAvailableQSSTemplates()
@@ -181,8 +187,11 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         Called each time the user opens this module.
         """
         # Make sure parameter node exists and observed
+        print('enter')
         self.initializeParameterNode()
-        self.onColorsSelectionChanged(self.ui.ColorsComboBox.currentText)
+        if self.checkForQtMaterial():
+            print('qt-material found')
+            self.onColorsSelectionChanged(self.ui.ColorsComboBox.currentText)
 
     def exit(self):
         """

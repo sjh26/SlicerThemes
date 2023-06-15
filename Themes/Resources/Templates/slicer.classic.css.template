@@ -1021,6 +1021,18 @@ QToolButton:checked {
   border-right: 12px solid {{primaryColor}};
 }
 
+QToolButton#PinButton,
+QToolButton#MaximizeViewButton,
+QToolButton#FitToWindowToolButton,
+QToolButton#CenterButton_Header,
+ctkExpandButton#MoreButton{
+  background: transparent;
+  background-color: -1;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+}
+
 /*  ------------------------------------------------------------------------  */
 /*  General viewers  */
 
@@ -1373,4 +1385,36 @@ QPushButton{
   text-transform: none;
   font-weight: normal;
 
+}
+
+QWidget#BarWidget{
+  background-color: -1;
+}
+
+ctkSliderWidget QDoubleSpinBox{
+  background-color: transparent;
+}
+
+QWidget#SliceOffsetSlider{
+  background-color: -1;
+}
+ctkSliderWidget QSlider{
+  background-color:transparent;
+}
+
+
+ctkConsolePrivate
+{
+    background-color: {{secondaryDarkColor}};
+    
+}
+
+ctkConsole
+{
+    qproperty-promptColor: {{secondaryLightColor}};
+    qproperty-outputTextColor: {{primaryColor}};
+    qproperty-errorTextColor: red;
+    qproperty-stdinTextColor: {{secondaryTextColor}};
+    qproperty-welcomeTextColor: {{secondaryTextColor}};
+    qproperty-commandTextColor: {{secondaryTextColor}};
 }

@@ -122,6 +122,8 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
 
     def onColorsSelectionChanged(self, text):
+        if not text:
+            return
         self.ui.InvertCheckBox.checked = 'light_' in text
 
         from qt_material import get_theme
@@ -187,10 +189,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         Called each time the user opens this module.
         """
         # Make sure parameter node exists and observed
-        print('enter')
+        
         self.initializeParameterNode()
         if self.checkForQtMaterial():
-            print('qt-material found')
             self.onColorsSelectionChanged(self.ui.ColorsComboBox.currentText)
 
     def exit(self):

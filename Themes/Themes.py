@@ -7,6 +7,7 @@ import slicer
 import qt
 from slicer.ScriptedLoadableModule import *
 from slicer.util import VTKObservationMixin
+from pathlib import Path
 
 
 #
@@ -155,15 +156,9 @@ class ThemesWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     
     
     def populateColors(self):
-        from qt_material import list_themes
+        
 
-        self.colors = {}
-        colors_list = list_themes()
-
-        for c in colors_list:
-            self.colors[c] = c
-
-        self.colors.update(self.logic.getAvailableColorFiles())
+        self.colors = self.logic.getAvailableColorFiles()
 
         self.ui.ColorsComboBox.clear()
 
@@ -392,6 +387,7 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         slicer.app.setStyleSheet(stylesheet)
     
     
+    
     def getAvailableQSSTemplates(self):
         templates = os.listdir(self.resourcePath('Templates'))
         templateLookup = {}
@@ -402,11 +398,22 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
 
    
     def getAvailableColorFiles(self):
+
+        from qt_material import list_themes
+
+        builtin_colors = {}
+        colors_list = list_themes()
+
+        for c in colors_list:
+            parts = c.split('.')
+            builtin_colors[parts[-2]] = c
+
         colors = os.listdir(self.resourcePath('Colors'))
         colorsLookup = {}
         for color in colors:
             name = os.path.basename(color)
-            colorsLookup[name] = os.path.join(self.resourcePath('Colors'),color )
+            colorsLookup[Path(name).stem] = os.path.join(self.resourcePath('Colors'),color )
+        colorsLookup.update(builtin_colors)
         return colorsLookup
 
     

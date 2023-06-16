@@ -1425,7 +1425,7 @@ ctkConsole
 {
     qproperty-promptColor: {{secondaryLightColor}};
     qproperty-outputTextColor: {{primaryColor}};
-    qproperty-errorTextColor: red;
+    qproperty-errorTextColor: #FF8888;
     qproperty-stdinTextColor: {{secondaryTextColor}};
     qproperty-welcomeTextColor: {{secondaryTextColor}};
     qproperty-commandTextColor: {{secondaryTextColor}};

@@ -382,6 +382,7 @@ class ThemesLogic(ScriptedLoadableModuleLogic):
         if 'slicer.classic' in template:
             extra['font_family'] = slicer.app.font().family()
             extra['font_size'] = '16'
+            extra['qmenu_padding'] = '30px'
             print(slicer.app.font().family())
         stylesheet = build_stylesheet(theme=colorPath,template=template, extra=extra, invert_secondary=invert_secondary)
         slicer.app.setStyleSheet(stylesheet)

@@ -1358,7 +1358,8 @@ QMenuBar QToolButton {
 
 /* --------------------------------------------- */
 /* Slicer widget styling */
-ctkCollapsibleButton { /*Same as push button */
+ctkCollapsibleButton,
+QToolButton::menu-button { /*Same as push button */
   color: {{primaryColor}};
   background-color: {{secondaryDarkColor}};
   border: 2px solid {{primaryColor}};
@@ -1369,6 +1370,7 @@ ctkCollapsibleButton { /*Same as push button */
 /*  Tweaks to existing template*/
 QPushButton,
 ctkExpandButton,
+QToolButton::menu-button,
 ctkCollapsibleButton{
   color: {{primaryColor}};
   text-transform: none;
@@ -1376,13 +1378,8 @@ ctkCollapsibleButton{
   border: 2px solid {{secondaryDarkColor}};
 }
 
-ctkConsole
-{
-  qproperty-promptColor: {{primaryColor}};
-  qproperty-outputTextColor: {{primaryColor}};
-  qproperty-commandTextColor: {{secondaryDarkColor}};
-}
-ctkConsolePrivate{background-color: {{secondaryColor}};}
+
+
 
 
 
@@ -1391,6 +1388,8 @@ ctkConsolePrivate{background-color: {{secondaryColor}};}
 
 QPushButton:checked,
 QPushButton:pressed,
+QPushButton:hover,
+QToolButton::menu-button:pressed,
 ctkCollapsibleButton:pressed {
   color: {{primaryColor}};
   background-color: {{secondaryDarkColor}};
@@ -1418,6 +1417,35 @@ ctkSliderWidget QSlider{
   background-color:transparent;
 }
 
+QToolBar QPushButton
+{
+  background: {{secondaryDarkColor}};
+  border: 0px;
+  border-radius: 0 px;
+  /* height: {{36|density(density_scale)}}px; */
+  margin: 3px;
+  padding: 3px;
+  border-right: 12px solid {{secondaryDarkColor}};
+  border-left: 12px solid {{secondaryDarkColor}};
+}
+
+
+
+QToolBar QPushButton:hover
+{
+  background: {{secondaryLightColor}};
+  border-radius: 0 px;
+  border-right: 12px solid {{secondaryLightColor}};
+  border-left: 12px solid {{secondaryLightColor}};
+}
+
+ctkConsole
+{
+  qproperty-promptColor: {{primaryColor}};
+  qproperty-outputTextColor: {{primaryColor}};
+  qproperty-commandTextColor: {{secondaryDarkColor}};
+}
+ctkConsolePrivate{background-color: {{secondaryColor}};}
 
 ctkConsolePrivate
 {

@@ -336,7 +336,7 @@ QPushButton:checked:disabled {
 /*  ------------------------------------------------------------------------  */
 /*  QTabBar  */
 
-QTabBar{
+/* QTabBar{
   text-transform: uppercase;
   font-weight: bold;
 }
@@ -426,7 +426,7 @@ QTabBar::close-button {
 
 QTabBar::close-button:hover {
   image: url(icon:/primary/tab_close.svg);
-}
+} */
 
 /*  ------------------------------------------------------------------------  */
 /*  QGroupBox  */

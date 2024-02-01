@@ -336,14 +336,10 @@ QPushButton:checked:disabled {
 /*  ------------------------------------------------------------------------  */
 /*  QTabBar  */
 
-/* QTabBar{
-  text-transform: uppercase;
-  font-weight: bold;
-}
 
 QTabBar::tab {
   color: {{secondaryTextColor}};
-  border: 0px;
+  border: none;
 }
 
 QTabBar::tab:bottom,
@@ -356,30 +352,30 @@ QTabBar::tab:left,
 QTabBar::tab:right{
   padding: {{16|density(density_scale)}}px 0;
   width: {{28|density(density_scale)}}px;
-}
+} 
 
 QTabBar::tab:top:selected,
 QTabBar::tab:top:hover {
   color: {{primaryColor}};
-  border-bottom: 2px solid {{primaryColor}};
+  background-color: {{secondaryColor}};
 }
 
 QTabBar::tab:bottom:selected,
 QTabBar::tab:bottom:hover {
   color: {{primaryColor}};
-  border-top: 2px solid {{primaryColor}};
+  background-color: {{secondaryColor}};
 }
 
 QTabBar::tab:right:selected,
 QTabBar::tab:right:hover {
   color: {{primaryColor}};
-  border-left: 2px solid {{primaryColor}};
+  background-color: {{secondaryColor}};
 }
 
 QTabBar::tab:left:selected,
 QTabBar::tab:left:hover {
   color: {{primaryColor}};
-  border-right: 2px solid {{primaryColor}};
+  background-color: {{secondaryColor}};
 }
 
 QTabBar QToolButton:hover,
@@ -388,7 +384,7 @@ QTabBar QToolButton {
   background-color: {{secondaryDarkColor}};
 }
 
-QTabBar QToolButton::up-arrow {
+ QTabBar QToolButton::up-arrow {
   image: url(icon:/disabled/uparrow2.svg);
 }
 
@@ -426,7 +422,7 @@ QTabBar::close-button {
 
 QTabBar::close-button:hover {
   image: url(icon:/primary/tab_close.svg);
-} */
+}
 
 /*  ------------------------------------------------------------------------  */
 /*  QGroupBox  */
@@ -1462,4 +1458,23 @@ ctkConsole
     qproperty-welcomeTextColor: {{secondaryTextColor}};
     qproperty-commandTextColor: {{secondaryTextColor}};
 }
+
+/* QWidget#qSlicerExtensionsManagerWidget > QTabBar::tab
+{
+  background-color: red;
+} */
+
+
+
+QTabWidget#tabWidget QTabBar::tab:bottom,
+QTabWidget#tabWidget QTabBar::tab:top{
+  padding: 0 {{16|density(density_scale)}}px;
+  height: {{60|density(density_scale)}}px;
+}
+
+/* QTabWidget#tabWidget QTabBar::tab:left,
+QTabWidget#tabWidget QTabBar::tab:right{
+  padding: {{16|density(density_scale)}}px 0;
+  width: {{60|density(density_scale)}}px;
+}  */
 

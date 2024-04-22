@@ -6,10 +6,10 @@ project(SlicerThemes)
 # Extension meta-information
 set(EXTENSION_HOMEPAGE "https://github.com/sjh26/SlicerThemes")
 set(EXTENSION_CATEGORY "Utilities")
-set(EXTENSION_CONTRIBUTORS "Sam Horvath (Kitware Inc)")
+set(EXTENSION_CONTRIBUTORS "Sam Horvath (Kitware)")
 set(EXTENSION_DESCRIPTION "This extension allows Material based color themes and styling to be applied to 3D Slicer.")
-set(EXTENSION_ICONURL "https://raw.githubusercontent.com/sjh26/SlicerThemes/main/Screenshot1.png")
-set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/sjh26/SlicerThemes/main/Themes/Resources/Icons/Themes.png")
+set(EXTENSION_ICONURL "https://raw.githubusercontent.com/sjh26/SlicerThemes/main/SlicerThemes.png")
+set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/sjh26/SlicerThemes/main/Screenshot1.png")
 set(EXTENSION_DEPENDS "NA") # Specified as a list or "NA" if no dependencies
 
 #-----------------------------------------------------------------------------
